@@ -1,0 +1,12 @@
+# Force consistent LF line endings for all text files
+* text eol=lf
+
+# Keep binary files untouched
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
