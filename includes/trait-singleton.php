@@ -6,10 +6,14 @@ defined( 'ABSPATH' ) || exit;
 trait Singleton {
 	protected static $instance = null;
 
-	public static function instance() {
+	protected function __construct() {}
+
+	final public static function instance() {
 		if ( null === static::$instance ) {
 			static::$instance = new static();
-			static::$instance->init();
+			if ( method_exists( static::$instance, 'init' ) ) {
+				static::$instance->init();
+			}
 		}
 
 		return static::$instance;
@@ -17,7 +21,11 @@ trait Singleton {
 
 	protected function init() {}
 
-	private function __clone() {}
+	final public function __clone() {
+		throw new \Error( 'Cannot clone singleton ' . static::class );
+	}
 
-	private function __wakeup() {}
+	final public function __wakeup() {
+		throw new \Error( 'Cannot unserialize singleton ' . static::class );
+	}
 }

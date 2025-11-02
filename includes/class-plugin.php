@@ -21,7 +21,8 @@ class Plugin {
 		REST_API::instance();
 		Importer::instance();
 		Webhook::instance();
-		Updater::instance();
+
+		add_action( 'init', [ $this, 'load_textdomain' ] );
 	}
 
 	protected function includes() {
@@ -47,5 +48,13 @@ class Plugin {
 
 	public function deactivate() {
 		flush_rewrite_rules();
+	}
+
+	public function load_textdomain() {
+		load_plugin_textdomain(
+			'soumais-localizador',
+			false,
+			dirname( plugin_basename( SOUMAIS_LOCATOR_FILE ) ) . '/languages'
+		);
 	}
 }
