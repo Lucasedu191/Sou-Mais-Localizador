@@ -19,6 +19,7 @@ define( 'SOUMAIS_LOCATOR_URL', plugin_dir_url( __FILE__ ) );
 // teste
 require_once SOUMAIS_LOCATOR_PATH . 'includes/trait-singleton.php';
 require_once SOUMAIS_LOCATOR_PATH . 'includes/class-plugin.php';
+require_once SOUMAIS_LOCATOR_PATH . 'includes/class-updater.php';
 
 add_action(
 	'plugins_loaded',
