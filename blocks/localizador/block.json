@@ -1,0 +1,31 @@
+{
+	"apiVersion": 2,
+	"name": "soumais/localizador",
+	"title": "Localizador Sou Mais",
+	"category": "widgets",
+	"icon": "location-alt",
+	"description": "Exibe o localizador de unidades Sou Mais.",
+	"textdomain": "soumais-localizador",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+		"layout": {
+			"type": "string",
+			"default": "full"
+		},
+		"radius": {
+			"type": "number",
+			"default": 10
+		},
+		"show_whatsapp": {
+			"type": "boolean",
+			"default": false
+		},
+		"redirect": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "soumais-locator-block"
+}

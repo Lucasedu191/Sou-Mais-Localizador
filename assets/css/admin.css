@@ -1,0 +1,23 @@
+.soumais-locator-admin .form-table th {
+	width: 240px;
+}
+
+.soumais-locator-admin input[type="text"],
+.soumais-locator-admin input[type="number"],
+.soumais-locator-admin textarea {
+	max-width: 480px;
+}
+
+.soumais-locator-admin .notice {
+	border-radius: 6px;
+}
+
+.soumais-locator-admin .button-primary {
+	background: linear-gradient(135deg, #2e5bff, #ff2d9b);
+	border: none;
+	box-shadow: 0 8px 16px rgba(46, 91, 255, 0.25);
+}
+
+.soumais-locator-admin .button-primary:hover {
+	filter: brightness(1.05);
+}
