@@ -21,6 +21,7 @@ class Plugin {
 		REST_API::instance();
 		Importer::instance();
 		Webhook::instance();
+		Updater::instance();
 	}
 
 	protected function includes() {
@@ -35,6 +36,7 @@ class Plugin {
 		require_once SOUMAIS_LOCATOR_PATH . 'includes/class-rest-api.php';
 		require_once SOUMAIS_LOCATOR_PATH . 'includes/class-importer.php';
 		require_once SOUMAIS_LOCATOR_PATH . 'includes/class-webhook.php';
+		require_once SOUMAIS_LOCATOR_PATH . 'includes/class-updater.php';
 	}
 
 	public function activate() {
