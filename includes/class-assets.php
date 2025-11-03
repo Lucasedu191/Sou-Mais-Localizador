@@ -34,7 +34,23 @@ class Assets {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		if ( 'toplevel_page_soumais_locator' !== $hook ) {
+		$should_enqueue = false;
+		$dependencies   = [ 'jquery' ];
+
+		if ( 'toplevel_page_soumais_locator' === $hook ) {
+			$should_enqueue = true;
+		}
+
+		if ( in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) {
+			$screen = get_current_screen();
+			if ( $screen && Post_Type_Unidade::CPT === $screen->post_type ) {
+				$should_enqueue = true;
+				wp_enqueue_media();
+				$dependencies[] = 'wp-media-utils';
+			}
+		}
+
+		if ( ! $should_enqueue ) {
 			return;
 		}
 
@@ -48,7 +64,7 @@ class Assets {
 		wp_enqueue_script(
 			'soumais-locator-admin',
 			SOUMAIS_LOCATOR_URL . 'assets/js/admin.js',
-			[ 'jquery' ],
+			$dependencies,
 			SOUMAIS_LOCATOR_VERSION,
 			true
 		);

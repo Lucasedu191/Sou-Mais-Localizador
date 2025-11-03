@@ -21,3 +21,42 @@
 .soumais-locator-admin .button-primary:hover {
 	filter: brightness(1.05);
 }
+
+.soumais-media-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	max-width: 320px;
+}
+
+.soumais-media-preview {
+	position: relative;
+	width: 100%;
+	padding-top: 62%;
+	background: #f3f4f8;
+	border: 1px dashed rgba(46, 91, 255, 0.4);
+	border-radius: 10px;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.soumais-media-preview img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.soumais-media-placeholder {
+	font-size: 0.85rem;
+	color: rgba(12, 32, 80, 0.6);
+	text-align: center;
+	padding: 0 1rem;
+}
+
+.soumais-media-actions .button-link {
+	padding: 0;
+}

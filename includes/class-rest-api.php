@@ -102,6 +102,9 @@ class REST_API {
 				}
 			}
 
+			$image_id  = (int) get_post_meta( $post->ID, '_sou_image_id', true );
+			$thumbnail = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : get_the_post_thumbnail_url( $post, 'medium' );
+
 			$units[] = [
 				'id'        => $post->ID,
 				'title'     => get_the_title( $post ),
@@ -111,7 +114,7 @@ class REST_API {
 				'hours'     => wp_kses_post( get_post_meta( $post->ID, '_sou_horario', true ) ),
 				'url'       => esc_url_raw( get_post_meta( $post->ID, '_sou_tecno_url', true ) ),
 				'distance'  => $distance,
-				'thumbnail' => get_the_post_thumbnail_url( $post, 'medium' ),
+				'thumbnail' => $thumbnail,
 			];
 		}
 
