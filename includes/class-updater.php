@@ -16,6 +16,7 @@ class Updater {
 
 		add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'maybe_set_update' ] );
 		add_filter( 'plugins_api', [ $this, 'plugins_api' ], 10, 3 );
+		add_filter( 'upgrader_source_selection', [ $this, 'rename_github_source' ], 10, 4 );
 	}
 
 	public function maybe_set_update( $transient ) {
@@ -139,5 +140,46 @@ class Updater {
 
 	protected function get_slug() {
 		return 'soumais-localizador';
+	}
+
+	public function rename_github_source( $source, $remote_source, $upgrader, $hook_extra ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found, Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		if ( empty( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== plugin_basename( SOUMAIS_LOCATOR_FILE ) ) {
+			return $source;
+		}
+
+		$source_basename = basename( untrailingslashit( $source ) );
+		$desired_slug    = $this->get_slug();
+
+		if ( $source_basename === $desired_slug ) {
+			return $source;
+		}
+
+		// Zipball padrão do GitHub vem como Usuario-Repositorio-commit.
+		if ( false === stripos( $source_basename, 'Sou-Mais-Localizador' ) ) {
+			return $source;
+		}
+
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		if ( ! $wp_filesystem ) {
+			return $source;
+		}
+
+		$destination = trailingslashit( dirname( untrailingslashit( $source ) ) ) . $desired_slug . '/';
+
+		if ( $wp_filesystem->exists( $destination ) ) {
+			$wp_filesystem->delete( $destination, true );
+		}
+
+		if ( ! $wp_filesystem->move( $source, $destination, true ) ) {
+			return $source;
+		}
+
+		return $destination;
 	}
 }

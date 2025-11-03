@@ -29,8 +29,8 @@ class REST_API {
 					'query'  => [ 'sanitize_callback' => 'sanitize_text_field' ],
 					'lat'    => [ 'validate_callback' => [ $this, 'validate_coordinate' ] ],
 					'lng'    => [ 'validate_callback' => [ $this, 'validate_coordinate' ] ],
-					'radius' => [ 'validate_callback' => 'is_numeric' ],
-					'limit'  => [ 'validate_callback' => 'is_numeric', 'default' => Settings::instance()->get_option( 'results_limit', 6 ) ],
+					'radius' => [ 'validate_callback' => [ $this, 'validate_number' ] ],
+					'limit'  => [ 'validate_callback' => [ $this, 'validate_number' ], 'default' => Settings::instance()->get_option( 'results_limit', 6 ) ],
 				],
 			]
 		);
@@ -46,8 +46,12 @@ class REST_API {
 		);
 	}
 
-	public function validate_coordinate( $value ) {
+	public function validate_coordinate( $value, $request = null, $param = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		return is_numeric( $value ) && $value >= -180 && $value <= 180;
+	}
+
+	public function validate_number( $value, $request = null, $param = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		return is_numeric( $value );
 	}
 
 	public function get_units( WP_REST_Request $request ) {
