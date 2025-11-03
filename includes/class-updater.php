@@ -91,13 +91,20 @@ class Updater {
 	}
 
 	protected function get_latest_release() {
+		$token   = Settings::instance()->github_token();
+		$headers = [
+			'Accept'     => 'application/vnd.github+json',
+			'User-Agent' => 'SouMaisLocator/' . SOUMAIS_LOCATOR_VERSION,
+		];
+
+		if ( ! empty( $token ) ) {
+			$headers['Authorization'] = 'Bearer ' . $token;
+		}
+
 		$response = wp_remote_get(
 			sprintf( self::API_LATEST, self::REPO ),
 			[
-				'headers' => [
-					'Accept'     => 'application/vnd.github+json',
-					'User-Agent' => 'SouMaisLocator/' . SOUMAIS_LOCATOR_VERSION,
-				],
+				'headers' => $headers,
 				'timeout' => 10,
 			]
 		);
@@ -183,3 +190,5 @@ class Updater {
 		return $destination;
 	}
 }
+
+

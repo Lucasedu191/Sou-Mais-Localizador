@@ -37,6 +37,7 @@ class Settings {
 		add_settings_field( 'webhook_url', __( 'URL do webhook', 'soumais-localizador' ), [ $this, 'field_text' ], 'soumais_locator', 'integrations', [ 'id' => 'webhook_url' ] );
 		add_settings_field( 'webhook_enabled', __( 'Enviar webhook', 'soumais-localizador' ), [ $this, 'field_toggle' ], 'soumais_locator', 'integrations', [ 'id' => 'webhook_enabled' ] );
 		add_settings_field( 'recaptcha_key', __( 'Chave reCAPTCHA v3', 'soumais-localizador' ), [ $this, 'field_text' ], 'soumais_locator', 'integrations', [ 'id' => 'recaptcha_key' ] );
+		add_settings_field( 'github_token', __( 'Token GitHub (opcional)', 'soumais-localizador' ), [ $this, 'field_text' ], 'soumais_locator', 'integrations', [ 'id' => 'github_token', 'description' => __( 'Informe um token pessoal para evitar limites da API GitHub.', 'soumais-localizador' ) ] );
 
 		add_settings_section( 'ui', __( 'Interface', 'soumais-localizador' ), '__return_null', 'soumais_locator' );
 		add_settings_field( 'lgpd_message', __( 'Mensagem LGPD', 'soumais-localizador' ), [ $this, 'field_textarea' ], 'soumais_locator', 'ui', [ 'id' => 'lgpd_message' ] );
@@ -51,6 +52,7 @@ class Settings {
 			'webhook_url'     => '',
 			'webhook_enabled' => 0,
 			'recaptcha_key'   => '',
+			'github_token'    => '',
 			'lgpd_message'    => __( 'Autorizo o contato da Academia Sou Mais.', 'soumais-localizador' ),
 			'cta_label'       => __( 'Ver planos', 'soumais-localizador' ),
 		];
@@ -65,6 +67,7 @@ class Settings {
 		$options['lgpd_message']    = wp_kses_post( $options['lgpd_message'] );
 		$options['cta_label']       = sanitize_text_field( $options['cta_label'] );
 		$options['recaptcha_key']   = sanitize_text_field( $options['recaptcha_key'] );
+		$options['github_token']    = sanitize_text_field( $options['github_token'] );
 
 		return $options;
 	}
@@ -87,8 +90,10 @@ class Settings {
 	public function field_text( $args ) {
 		$id    = esc_attr( $args['id'] );
 		$value = esc_attr( $this->get_option( $id ) );
+		$description = ! empty( $args['description'] ) ? '<p class="description">' . esc_html( $args['description'] ) . '</p>' : '';
 		?>
 		<input type="text" id="<?php echo $id; ?>" name="<?php echo esc_attr( self::OPTION_KEY . '[' . $id . ']' ); ?>" value="<?php echo $value; ?>" class="regular-text">
+		<?php echo $description; ?>
 		<?php
 	}
 
@@ -133,5 +138,9 @@ class Settings {
 
 	public function recaptcha_enabled() {
 		return (bool) $this->get_option( 'recaptcha_key', false );
+	}
+
+	public function github_token() {
+		return trim( $this->get_option( 'github_token', '' ) );
 	}
 }
