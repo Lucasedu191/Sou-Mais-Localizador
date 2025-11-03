@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sou Mais Localizador
  * Description: Localiza unidades, captura leads e integra com Tecnofit.
- * Version: 1.0.8
+ * Version: 1.0.9
  * Author: Sou Mais
  * Text Domain: soumais-localizador
  * Domain Path: /languages
@@ -12,19 +12,52 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SOUMAIS_LOCATOR_VERSION', '1.0.8' );
+define( 'SOUMAIS_LOCATOR_VERSION', '1.0.9' );
 define( 'SOUMAIS_LOCATOR_FILE', __FILE__ );
 define( 'SOUMAIS_LOCATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SOUMAIS_LOCATOR_URL', plugin_dir_url( __FILE__ ) );
 // teste2
 require_once SOUMAIS_LOCATOR_PATH . 'includes/trait-singleton.php';
 require_once SOUMAIS_LOCATOR_PATH . 'includes/class-plugin.php';
-require_once SOUMAIS_LOCATOR_PATH . 'includes/class-updater.php';
+
+$pucc_composer = __DIR__ . '/vendor/autoload.php';
+$pucc_embedded = __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+
+if ( file_exists( $pucc_composer ) ) {
+	require $pucc_composer;
+} elseif ( file_exists( $pucc_embedded ) ) {
+	require $pucc_embedded;
+} else {
+	error_log( '[SouMais Localizador] Plugin Update Checker não encontrado; updates automáticos desativados.' );
+}
+
+$factory = null;
+if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
+	$factory = '\YahnisElsts\PluginUpdateChecker\v5\PucFactory';
+} elseif ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5p6\PucFactory' ) ) {
+	$factory = '\YahnisElsts\PluginUpdateChecker\v5p6\PucFactory';
+}
+
+if ( $factory ) {
+	$update_checker = $factory::buildUpdateChecker(
+		'https://github.com/Lucasedu191/Sou-Mais-Localizador',
+		__FILE__,
+		'soumais-localizador'
+	);
+
+	if ( method_exists( $update_checker, 'setBranch' ) ) {
+		$update_checker->setBranch( 'main' );
+	}
+
+	$api = $update_checker->getVcsApi();
+	if ( $api && method_exists( $api, 'enableReleaseAssets' ) ) {
+		$api->enableReleaseAssets();
+	}
+}
 
 add_action(
 	'plugins_loaded',
 	static function () {
 		SouMais\Locator\Plugin::instance();
-		SouMais\Locator\Updater::instance();
 	}
 );
