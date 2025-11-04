@@ -36,10 +36,17 @@
 			limit: data.settings.results_limit,
 		};
 
+		resultsWrap.classList.add('sm-locator__results--hidden');
+
+		const revealResults = () => {
+			resultsWrap.classList.remove('sm-locator__results--hidden');
+		};
+
 		searchForm.addEventListener('submit', (event) => {
 			event.preventDefault();
 			const query = queryInput.value.trim();
 			const params = { ...defaults, query };
+			revealResults();
 			fetchUnits(params, { resultsWrap, statusEl, root });
 		});
 
@@ -59,6 +66,7 @@
 							lat: position.coords.latitude,
 							lng: position.coords.longitude,
 						};
+						revealResults();
 						fetchUnits(params, { resultsWrap, statusEl, root });
 					},
 					() => {
@@ -167,9 +175,12 @@
 	function renderResults(items, context) {
 		const { resultsWrap } = context;
 		if (!Array.isArray(items) || items.length === 0) {
+			resultsWrap.classList.remove('has-results');
 			resultsWrap.innerHTML = '<p class="sm-locator__empty">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
 			return;
 		}
+
+		resultsWrap.classList.add('has-results');
 
 		resultsWrap.innerHTML = items
 			.map((unit) => {
@@ -180,6 +191,8 @@
 						: '';
 				return (
 					'<article class="sm-card">' +
+					'<div class="sm-card__halo"></div>' +
+					'<div class="sm-card__inner">' +
 					`<figure class="sm-card__media"><img src="${unit.thumbnail || data.assets.placeholder}" alt="${unit.title}"></figure>` +
 					'<div class="sm-card__body">' +
 					`<h3 class="sm-card__title">${unit.title}</h3>` +
@@ -189,6 +202,7 @@
 					'<div class="sm-card__actions">' +
 					`<button type="button" class="sm-card__cta" data-unit="${unit.id}" data-unit-name="${unit.title}">${data.strings.plans_label}</button>` +
 					whatsapp +
+					'</div>' +
 					'</div>' +
 					'</article>'
 				);
@@ -265,3 +279,4 @@
 		});
 	}
 })();
+
