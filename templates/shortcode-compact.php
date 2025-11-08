@@ -23,6 +23,16 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</form>
 
+	<div class="sm-carousel">
+		<button type="button" class="sm-carousel__nav sm-carousel__nav--prev" aria-label="<?php esc_attr_e( 'Unidade anterior', 'soumais-localizador' ); ?>">
+			<span aria-hidden="true">‹</span>
+		</button>
+		<div class="sm-locator__carousel" aria-live="polite"></div>
+		<button type="button" class="sm-carousel__nav sm-carousel__nav--next" aria-label="<?php esc_attr_e( 'Próxima unidade', 'soumais-localizador' ); ?>">
+			<span aria-hidden="true">›</span>
+		</button>
+	</div>
+
 	<div class="sm-locator__results" aria-live="polite"></div>
 	<div class="sm-locator__status" role="status"></div>
 

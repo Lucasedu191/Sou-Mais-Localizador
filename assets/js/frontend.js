@@ -23,18 +23,52 @@
 		const unitField = leadForm ? leadForm.querySelector('input[name="unidade"]') : null;
 		const unitLabel = leadForm ? leadForm.querySelector('.sm-lead__unit') : null;
 		const submitBtn = leadForm ? leadForm.querySelector('button[type="submit"]') : null;
+		const carousel = root.querySelector('.sm-locator__carousel');
+		const carouselPrev = root.querySelector('.sm-carousel__nav--prev');
+		const carouselNext = root.querySelector('.sm-carousel__nav--next');
 
 		if (!searchForm || !resultsWrap || !leadForm) {
 			return;
 		}
+
+		const revealResults = () => {
+			resultsWrap.classList.remove('sm-locator__results--hidden');
+		};
+
+		const updateCarouselNav = () => {
+			if (!carousel || !carouselPrev || !carouselNext) {
+				return;
+			}
+			const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+			const noScrollNeeded = maxScroll <= 5;
+			carouselPrev.disabled = noScrollNeeded || carousel.scrollLeft <= 5;
+			carouselNext.disabled = noScrollNeeded || carousel.scrollLeft >= maxScroll - 5;
+		};
+
+		if (carouselPrev && carousel) {
+			carouselPrev.addEventListener('click', () => {
+				carousel.scrollBy({ left: -carousel.clientWidth * 0.85, behavior: 'smooth' });
+			});
+		}
+
+		if (carouselNext && carousel) {
+			carouselNext.addEventListener('click', () => {
+				carousel.scrollBy({ left: carousel.clientWidth * 0.85, behavior: 'smooth' });
+			});
+		}
+
+		carousel?.addEventListener('scroll', updateCarouselNav);
+		window.addEventListener('resize', updateCarouselNav);
 
 		setupPhoneMask(leadForm.querySelector('input[name="telefone"]'));
 		populateUtms(leadForm);
 
 		const defaults = {
 			radius: data.settings.radius,
-			limit: data.settings.results_limit,
+			limit: Math.max(data.settings.results_limit || 0, 50),
 		};
+		let hasSearched = false;
+		resultsWrap.classList.add('sm-locator__results--hidden');
 
 		resultsWrap.classList.add('sm-locator__results--hidden');
 
@@ -46,8 +80,9 @@
 			event.preventDefault();
 			const query = queryInput.value.trim();
 			const params = { ...defaults, query };
+			hasSearched = true;
 			revealResults();
-			fetchUnits(params, { resultsWrap, statusEl, root });
+			fetchUnits(params, { resultsWrap, statusEl, root, showGrid: true });
 		});
 
 		if (locationBtn) {
@@ -66,8 +101,9 @@
 							lat: position.coords.latitude,
 							lng: position.coords.longitude,
 						};
+						hasSearched = true;
 						revealResults();
-						fetchUnits(params, { resultsWrap, statusEl, root });
+						fetchUnits(params, { resultsWrap, statusEl, root, showGrid: true });
 					},
 					() => {
 						showStatus(statusEl, data.strings.error_message, true);
@@ -140,14 +176,16 @@
 				});
 		});
 
-		// Carrega resultados iniciais.
-		fetchUnits(defaults, { resultsWrap, statusEl, root });
+		// Carrega resultados iniciais apenas para o carrossel.
+		fetchUnits({ ...defaults }, { resultsWrap, statusEl, root, showGrid: false });
 	}
 
 	function fetchUnits(params, context) {
-		const { resultsWrap, statusEl } = context;
+		const { resultsWrap, statusEl, showGrid = true } = context;
 		showStatus(statusEl, '', false);
-		resultsWrap.classList.add('is-loading');
+		if (showGrid) {
+			resultsWrap.classList.add('is-loading');
+		}
 
 		const searchParams = new URLSearchParams();
 		Object.entries(params).forEach(([key, value]) => {
@@ -162,18 +200,31 @@
 				method: 'GET',
 			})
 			.then((items) => {
-				renderResults(items, context);
+				renderResults(items, { resultsWrap, statusEl, showGrid });
 			})
 			.catch(() => {
 				showStatus(statusEl, data.strings.error_message, true);
 			})
 			.finally(() => {
-				resultsWrap.classList.remove('is-loading');
+				if (showGrid) {
+					resultsWrap.classList.remove('is-loading');
+				}
 			});
 	}
 
 	function renderResults(items, context) {
-		const { resultsWrap } = context;
+		const { resultsWrap, showGrid = true } = context;
+
+		renderCarousel(items);
+
+		if (!showGrid) {
+			resultsWrap.classList.add('sm-locator__results--hidden');
+			resultsWrap.innerHTML = '';
+			return;
+		}
+
+		resultsWrap.classList.remove('sm-locator__results--hidden');
+
 		if (!Array.isArray(items) || items.length === 0) {
 			resultsWrap.classList.remove('has-results');
 			resultsWrap.innerHTML = '<p class="sm-locator__empty">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
@@ -181,33 +232,54 @@
 		}
 
 		resultsWrap.classList.add('has-results');
+		resultsWrap.innerHTML = items.map((unit) => buildCard(unit, 'grid')).join('');
+	}
 
-		resultsWrap.innerHTML = items
-			.map((unit) => {
-				const distance = unit.distance ? `<span class="sm-card__distance">${unit.distance.toFixed(1)} km</span>` : '';
-				const whatsapp =
-					data.settings.show_whatsapp && unit.whatsapp
-						? `<a class="sm-card__whatsapp" href="https://wa.me/${unit.whatsapp}?text=${encodeURIComponent('Olá! Tenho interesse na unidade ' + unit.title)}" target="_blank" rel="noopener">${data.strings.whatsapp_label}</a>`
-						: '';
-				return (
-					'<article class="sm-card">' +
-					'<div class="sm-card__halo"></div>' +
-					'<div class="sm-card__inner">' +
-					`<figure class="sm-card__media"><img src="${unit.thumbnail || data.assets.placeholder}" alt="${unit.title}"></figure>` +
-					'<div class="sm-card__body">' +
-					`<h3 class="sm-card__title">${unit.title}</h3>` +
-					`<p class="sm-card__address">${unit.address || ''}</p>` +
-					distance +
-					'</div>' +
-					'<div class="sm-card__actions">' +
-					`<button type="button" class="sm-card__cta" data-unit="${unit.id}" data-unit-name="${unit.title}">${data.strings.plans_label}</button>` +
-					whatsapp +
-					'</div>' +
-					'</div>' +
-					'</article>'
-				);
-			})
-			.join('');
+	function renderCarousel(items) {
+		if (!carousel) {
+			return;
+		}
+
+		if (!Array.isArray(items) || items.length === 0) {
+			carousel.innerHTML = '<p class="sm-locator__empty sm-locator__empty--carousel">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
+			updateCarouselNav();
+			return;
+		}
+
+		carousel.innerHTML = items.map((unit) => buildCard(unit, 'carousel')).join('');
+		requestAnimationFrame(updateCarouselNav);
+	}
+
+	function buildCard(unit, variant = 'grid') {
+		const classes = ['sm-card'];
+		if (variant === 'carousel') {
+			classes.push('sm-card--carousel');
+		}
+
+		const distance = unit.distance ? `<span class="sm-card__distance">${unit.distance.toFixed(1)} km</span>` : '';
+		const whatsappMessage = `Ol\u00E1! Tenho interesse na unidade ${unit.title}`;
+		const whatsapp =
+			data.settings.show_whatsapp && unit.whatsapp
+				? `<a class="sm-card__whatsapp" href="https://wa.me/${unit.whatsapp}?text=${encodeURIComponent(whatsappMessage)}" target="_blank" rel="noopener">${data.strings.whatsapp_label}</a>`
+				: '';
+
+		return (
+			`<article class="${classes.join(' ')}">` +
+			'<div class="sm-card__halo"></div>' +
+			'<div class="sm-card__inner">' +
+			`<figure class="sm-card__media"><img src="${unit.thumbnail || data.assets.placeholder}" alt="${unit.title}"></figure>` +
+			'<div class="sm-card__body">' +
+			`<h3 class="sm-card__title">${unit.title}</h3>` +
+			`<p class="sm-card__address">${unit.address || ''}</p>` +
+			distance +
+			'</div>' +
+			'<div class="sm-card__actions">' +
+			`<button type="button" class="sm-card__cta" data-unit="${unit.id}" data-unit-name="${unit.title}">${data.strings.plans_label}</button>` +
+			whatsapp +
+			'</div>' +
+			'</div>' +
+			'</article>'
+		);
 	}
 
 	function showStatus(statusEl, message, isError = false) {
@@ -279,4 +351,5 @@
 		});
 	}
 })();
+
 

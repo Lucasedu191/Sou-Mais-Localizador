@@ -226,4 +226,14 @@ class Helpers {
 
 		include $path;
 	}
+
+	public static function normalize_string( $value ) {
+		$value = wp_strip_all_tags( (string) $value );
+		$value = remove_accents( $value );
+		return strtolower( trim( $value ) );
+	}
+
+	public static function normalize_digits( $value ) {
+		return preg_replace( '/\D+/', '', (string) $value );
+	}
 }

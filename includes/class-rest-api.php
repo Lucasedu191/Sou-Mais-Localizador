@@ -55,10 +55,20 @@ class REST_API {
 	}
 
 	public function get_units( WP_REST_Request $request ) {
-		$params = $request->get_params();
-		$args   = [
+		$params            = $request->get_params();
+		$search_query      = isset( $params['query'] ) ? trim( (string) $params['query'] ) : '';
+		$normalized_search = Helpers::normalize_string( $search_query );
+		$digits_search     = Helpers::normalize_digits( $search_query );
+		$is_numeric_search = '' !== $digits_search && ctype_digit( $digits_search );
+
+		$limit = isset( $params['limit'] ) ? (int) $params['limit'] : Settings::instance()->get_option( 'results_limit', 6 );
+		if ( $limit <= 0 ) {
+			$limit = -1;
+		}
+
+		$args = [
 			'post_type'      => Post_Type_Unidade::CPT,
-			'posts_per_page' => isset( $params['limit'] ) ? (int) $params['limit'] : Settings::instance()->get_option( 'results_limit', 6 ),
+			'posts_per_page' => $search_query ? -1 : $limit,
 			'post_status'    => 'publish',
 			'meta_query'     => [
 				[
@@ -68,8 +78,8 @@ class REST_API {
 			],
 		];
 
-		if ( ! empty( $params['query'] ) ) {
-			$args['s'] = $params['query'];
+		if ( ! empty( $search_query ) ) {
+			$args['s'] = $search_query;
 		}
 
 		$args = apply_filters( 'soumais_locator_units_query_args', $args, $params );
@@ -99,6 +109,27 @@ class REST_API {
 
 				if ( ! empty( $params['radius'] ) && $distance > (float) $params['radius'] ) {
 					continue;
+				}
+			}
+
+			$address_parts = [
+				get_the_title( $post ),
+				get_post_meta( $post->ID, '_sou_endereco', true ),
+				get_post_meta( $post->ID, '_sou_bairro', true ),
+				get_post_meta( $post->ID, '_sou_cidade', true ),
+				get_post_meta( $post->ID, '_sou_uf', true ),
+			];
+			$cep_digits = Helpers::normalize_digits( get_post_meta( $post->ID, '_sou_cep', true ) );
+			if ( $search_query ) {
+				if ( $is_numeric_search ) {
+					if ( empty( $cep_digits ) || false === strpos( $cep_digits, $digits_search ) ) {
+						continue;
+					}
+				} else {
+					$haystack = Helpers::normalize_string( implode( ' ', array_filter( $address_parts ) ) );
+					if ( false === strpos( $haystack, $normalized_search ) ) {
+						continue;
+					}
 				}
 			}
 
