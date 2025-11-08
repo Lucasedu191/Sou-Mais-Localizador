@@ -67,7 +67,9 @@
 			});
 		}
 
-		carousel?.addEventListener('scroll', updateCarouselNav);
+		if (carousel) {
+			carousel.addEventListener('scroll', updateCarouselNav);
+		}
 		window.addEventListener('resize', updateCarouselNav);
 
 		setupPhoneMask(leadForm.querySelector('input[name="telefone"]'));
@@ -111,7 +113,7 @@
 			});
 		}
 
-		resultsWrap.addEventListener('click', (event) => {
+		const handleCardClick = (event) => {
 			const target = event.target.closest('.sm-card__cta');
 			if (!target) {
 				return;
@@ -125,7 +127,12 @@
 				unitLabel.textContent = unitName;
 			}
 			openModal(modal);
-		});
+		};
+
+		resultsWrap.addEventListener('click', handleCardClick);
+		if (carousel) {
+			carousel.addEventListener('click', handleCardClick);
+		}
 
 		if (closeModalBtn) {
 			closeModalBtn.addEventListener('click', () => closeModal(modal));
@@ -176,6 +183,11 @@
 
 		// Carrega resultados iniciais apenas para o carrossel.
 		updateCarouselNav();
+		if (Array.isArray(data.initialUnits) && data.initialUnits.length) {
+			renderCarousel(data.initialUnits);
+		}
+		requestAnimationFrame(updateCarouselNav);
+
 		fetchUnits({ ...defaults }, { resultsWrap, statusEl, root, showGrid: false });
 	}
 

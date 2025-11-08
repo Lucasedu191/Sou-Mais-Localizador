@@ -55,7 +55,9 @@
 
 .sm-carousel {
 	position: relative;
-	margin: 1.25rem 0 1.5rem;
+	margin: 1.25rem auto 1.5rem;
+	max-width: min(100%, 1000px);
+	padding: 0 4.5rem;
 }
 
 .sm-locator__carousel {
@@ -64,19 +66,15 @@
 	align-items: stretch;
 	gap: 1rem;
 	overflow-x: auto;
-	padding: 0.5rem 3.5rem 1rem;
+	overflow-y: hidden;
+	padding: 0.5rem 0 1rem;
 	scroll-snap-type: x mandatory;
-	scrollbar-width: thin;
+	scrollbar-width: none;
 	min-height: 280px;
 }
 
 .sm-locator__carousel::-webkit-scrollbar {
-	height: 8px;
-}
-
-.sm-locator__carousel::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, 0.25);
-	border-radius: 999px;
+	display: none;
 }
 
 .sm-carousel__nav {

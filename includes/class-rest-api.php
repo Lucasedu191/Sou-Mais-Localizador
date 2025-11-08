@@ -70,10 +70,11 @@ class REST_API {
 
 		$args = apply_filters( 'soumais_locator_units_query_args', $args, $params );
 
+		$use_cache = empty( $search_query ) && empty( $params['lat'] ) && empty( $params['lng'] ) && empty( $params['radius'] );
 		$cache_key = Helpers::build_cache_key( array_merge( $args, $params ) );
-		$cached    = get_transient( $cache_key );
+		$cached    = $use_cache ? get_transient( $cache_key ) : false;
 
-		if ( false !== $cached ) {
+		if ( $use_cache && false !== $cached ) {
 			return new WP_REST_Response( $cached );
 		}
 
@@ -121,8 +122,10 @@ class REST_API {
 
 		$units = Helpers::sort_by_distance( $units );
 
-		set_transient( $cache_key, $units, MINUTE_IN_SECONDS * 5 );
-		$this->store_cache_key( $cache_key );
+		if ( $use_cache ) {
+			set_transient( $cache_key, $units, MINUTE_IN_SECONDS * 5 );
+			$this->store_cache_key( $cache_key );
+		}
 
 		if ( empty( $search_query ) && $limit > 0 ) {
 			$units = array_slice( $units, 0, $limit );

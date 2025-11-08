@@ -207,6 +207,7 @@ class Helpers {
 			[
 				'strings'  => $context['strings'],
 				'settings' => $context['settings'],
+				'initialUnits' => $context['initial_units'] ?? [],
 				'nonce'    => wp_create_nonce( 'soumais_locator' ),
 				'assets'   => [
 					'placeholder' => 'data:image/svg+xml;utf8,' . rawurlencode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2e5bff"/><stop offset="100%" stop-color="#ff2d9b"/></linearGradient></defs><rect width="320" height="200" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family=\"Arial, sans-serif\" font-size=\"28\">Sou Mais</text></svg>' ),
