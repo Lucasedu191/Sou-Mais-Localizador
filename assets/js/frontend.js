@@ -175,10 +175,7 @@
 		});
 
 		// Carrega resultados iniciais apenas para o carrossel.
-		if (Array.isArray(data.initialUnits) && data.initialUnits.length) {
-			renderCarousel(data.initialUnits);
-		}
-
+		updateCarouselNav();
 		fetchUnits({ ...defaults }, { resultsWrap, statusEl, root, showGrid: false });
 	}
 

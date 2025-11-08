@@ -32,11 +32,47 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</form>
 
+	<?php $initial_units = $initial_units ?? []; ?>
 	<div class="sm-carousel">
 		<button type="button" class="sm-carousel__nav sm-carousel__nav--prev" aria-label="<?php esc_attr_e( 'Unidade anterior', 'soumais-localizador' ); ?>">
 			<span aria-hidden="true">‹</span>
 		</button>
-		<div class="sm-locator__carousel" aria-live="polite"></div>
+		<div class="sm-locator__carousel" aria-live="polite">
+			<?php if ( ! empty( $initial_units ) ) : ?>
+				<?php foreach ( array_slice( $initial_units, 0, 15 ) as $unit ) : ?>
+					<?php
+					$title     = esc_html( $unit['title'] ?? '' );
+					$address   = esc_html( $unit['address'] ?? '' );
+					$thumb     = esc_url( $unit['thumbnail'] ?? '' );
+					$phone_url = ! empty( $unit['whatsapp'] ) ? sprintf( 'https://wa.me/%s?text=%s', rawurlencode( $unit['whatsapp'] ), rawurlencode( sprintf( __( 'Olá! Tenho interesse na unidade %s', 'soumais-localizador' ), $unit['title'] ?? '' ) ) ) : '';
+					?>
+					<article class="sm-card sm-card--carousel">
+						<div class="sm-card__halo"></div>
+						<div class="sm-card__inner">
+							<figure class="sm-card__media">
+								<img src="<?php echo $thumb ?: esc_url( SOUMAIS_LOCATOR_URL . 'assets/img/placeholder.png' ); ?>" alt="<?php echo $title; ?>">
+							</figure>
+							<div class="sm-card__body">
+								<h3 class="sm-card__title"><?php echo $title; ?></h3>
+								<p class="sm-card__address"><?php echo $address; ?></p>
+							</div>
+							<div class="sm-card__actions">
+								<button type="button" class="sm-card__cta" data-unit="<?php echo esc_attr( $unit['id'] ); ?>" data-unit-name="<?php echo $title; ?>">
+									<?php echo esc_html( $strings['plans_label'] ); ?>
+								</button>
+								<?php if ( $settings['show_whatsapp'] && ! empty( $unit['whatsapp'] ) ) : ?>
+									<a class="sm-card__whatsapp" href="<?php echo esc_url( $phone_url ); ?>" target="_blank" rel="noopener">
+										<?php echo esc_html( $strings['whatsapp_label'] ); ?>
+									</a>
+								<?php endif; ?>
+							</div>
+						</div>
+					</article>
+				<?php endforeach; ?>
+			<?php else : ?>
+				<p class="sm-locator__empty sm-locator__empty--carousel"><?php echo esc_html( $strings['empty'] ); ?></p>
+			<?php endif; ?>
+		</div>
 		<button type="button" class="sm-carousel__nav sm-carousel__nav--next" aria-label="<?php esc_attr_e( 'Próxima unidade', 'soumais-localizador' ); ?>">
 			<span aria-hidden="true">›</span>
 		</button>
