@@ -186,13 +186,7 @@
 }
 
 .sm-locator__results {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 1.5rem;
-	position: relative;
-	min-height: 200px;
-	padding: 0.25rem 0 0.5rem;
-	justify-items: stretch;
+	display: none;
 }
 
 .sm-locator__results--hidden {
