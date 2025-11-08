@@ -67,7 +67,7 @@
 	padding: 0.5rem 3.5rem 1rem;
 	scroll-snap-type: x mandatory;
 	scrollbar-width: thin;
-	min-height: 320px;
+	min-height: 280px;
 }
 
 .sm-locator__carousel::-webkit-scrollbar {

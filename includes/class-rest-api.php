@@ -62,13 +62,10 @@ class REST_API {
 		$is_numeric_search = '' !== $digits_search && ctype_digit( $digits_search );
 
 		$limit = isset( $params['limit'] ) ? (int) $params['limit'] : Settings::instance()->get_option( 'results_limit', 6 );
-		if ( $limit <= 0 ) {
-			$limit = -1;
-		}
 
 		$args = [
 			'post_type'      => Post_Type_Unidade::CPT,
-			'posts_per_page' => $search_query ? -1 : $limit,
+			'posts_per_page' => -1,
 			'post_status'    => 'publish',
 			'meta_query'     => [
 				[
@@ -77,10 +74,6 @@ class REST_API {
 				],
 			],
 		];
-
-		if ( ! empty( $search_query ) ) {
-			$args['s'] = $search_query;
-		}
 
 		$args = apply_filters( 'soumais_locator_units_query_args', $args, $params );
 
@@ -153,6 +146,10 @@ class REST_API {
 
 		set_transient( $cache_key, $units, MINUTE_IN_SECONDS * 5 );
 		$this->store_cache_key( $cache_key );
+
+		if ( empty( $search_query ) && $limit > 0 ) {
+			$units = array_slice( $units, 0, $limit );
+		}
 
 		return new WP_REST_Response( $units );
 	}
