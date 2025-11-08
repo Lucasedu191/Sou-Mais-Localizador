@@ -213,6 +213,8 @@
 	border-radius: 24px;
 	overflow: hidden;
 	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 
 .sm-card__halo {
@@ -340,15 +342,15 @@
 }
 
 .sm-card__whatsapp {
-	background-color: rgba(33, 196, 99, 0.15);
-	color: var(--sou-green);
+	background-color: #21c463;
+	color: var(--sou-white);
+	box-shadow: 0 10px 24px rgba(33, 196, 99, 0.35);
 }
 
 .sm-card__whatsapp:hover,
 .sm-card__whatsapp:focus-visible {
-	background-color: var(--sou-green);
-	color: var(--sou-white);
-	box-shadow: 0 10px 24px rgba(33, 196, 99, 0.35);
+	background-color: #1a9a4f;
+	border-color: rgba(26, 154, 79, 0.6);
 }
 
 .sm-locator__status {
@@ -554,6 +556,8 @@
 	min-width: 280px;
 	max-width: 280px;
 	flex: 0 0 280px;
+	width: 280px;
+	height: 100%;
 	scroll-snap-align: center;
 }
 
