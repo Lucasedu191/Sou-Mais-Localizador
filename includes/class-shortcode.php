@@ -29,6 +29,7 @@ class Shortcode {
 
 		$context = [
 			'atts' => $atts,
+			'initial_units' => Helpers::get_active_units( max( Settings::instance()->get_option( 'results_limit', 6 ), 50 ) ),
 			'strings' => [
 				'use_location'       => __( 'Usar localização atual', 'soumais-localizador' ),
 				'search_placeholder' => __( 'Busque por cidade, bairro ou CEP', 'soumais-localizador' ),

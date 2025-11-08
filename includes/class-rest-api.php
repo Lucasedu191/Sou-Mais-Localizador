@@ -64,15 +64,8 @@ class REST_API {
 		$limit = isset( $params['limit'] ) ? (int) $params['limit'] : Settings::instance()->get_option( 'results_limit', 6 );
 
 		$args = [
-			'post_type'      => Post_Type_Unidade::CPT,
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'meta_query'     => [
-				[
-					'key'   => '_sou_status',
-					'value' => 'active',
-				],
-			],
+			'limit'        => -1,
+			'include_meta' => true,
 		];
 
 		$args = apply_filters( 'soumais_locator_units_query_args', $args, $params );
@@ -84,12 +77,28 @@ class REST_API {
 			return new WP_REST_Response( $cached );
 		}
 
-		$query = new WP_Query( $args );
-		$units = [];
+		$raw_units = Helpers::get_active_units( $args['limit'], ! empty( $args['include_meta'] ) );
+		$units     = [];
 
-		foreach ( $query->posts as $post ) {
-			$lat = (float) get_post_meta( $post->ID, '_sou_lat', true );
-			$lng = (float) get_post_meta( $post->ID, '_sou_lng', true );
+		foreach ( $raw_units as $unit ) {
+			$meta     = $unit['_meta'] ?? [];
+			$lat      = isset( $meta['lat'] ) ? (float) $meta['lat'] : 0.0;
+			$lng      = isset( $meta['lng'] ) ? (float) $meta['lng'] : 0.0;
+			$distance = null;
+
+			if ( $search_query ) {
+				if ( $is_numeric_search ) {
+					$cep_digits = $meta['cep_digits'] ?? '';
+					if ( empty( $cep_digits ) || false === strpos( $cep_digits, $digits_search ) ) {
+						continue;
+					}
+				} else {
+					$haystack = $meta['search_blob'] ?? '';
+					if ( empty( $haystack ) || false === strpos( $haystack, $normalized_search ) ) {
+						continue;
+					}
+				}
+			}
 
 			$distance = null;
 			if ( isset( $params['lat'], $params['lng'] ) && $lat && $lng ) {
@@ -105,41 +114,9 @@ class REST_API {
 				}
 			}
 
-			$address_parts = [
-				get_the_title( $post ),
-				get_post_meta( $post->ID, '_sou_endereco', true ),
-				get_post_meta( $post->ID, '_sou_bairro', true ),
-				get_post_meta( $post->ID, '_sou_cidade', true ),
-				get_post_meta( $post->ID, '_sou_uf', true ),
-			];
-			$cep_digits = Helpers::normalize_digits( get_post_meta( $post->ID, '_sou_cep', true ) );
-			if ( $search_query ) {
-				if ( $is_numeric_search ) {
-					if ( empty( $cep_digits ) || false === strpos( $cep_digits, $digits_search ) ) {
-						continue;
-					}
-				} else {
-					$haystack = Helpers::normalize_string( implode( ' ', array_filter( $address_parts ) ) );
-					if ( false === strpos( $haystack, $normalized_search ) ) {
-						continue;
-					}
-				}
-			}
-
-			$image_id  = (int) get_post_meta( $post->ID, '_sou_image_id', true );
-			$thumbnail = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : get_the_post_thumbnail_url( $post, 'medium' );
-
-			$units[] = [
-				'id'        => $post->ID,
-				'title'     => get_the_title( $post ),
-				'address'   => Helpers::format_unit_address( $post->ID ),
-				'phone'     => get_post_meta( $post->ID, '_sou_tel', true ),
-				'whatsapp'  => get_post_meta( $post->ID, '_sou_whatsapp', true ),
-				'hours'     => wp_kses_post( get_post_meta( $post->ID, '_sou_horario', true ) ),
-				'url'       => esc_url_raw( get_post_meta( $post->ID, '_sou_tecno_url', true ) ),
-				'distance'  => $distance,
-				'thumbnail' => $thumbnail,
-			];
+			$unit['distance'] = $distance;
+			unset( $unit['_meta'] );
+			$units[] = $unit;
 		}
 
 		$units = Helpers::sort_by_distance( $units );

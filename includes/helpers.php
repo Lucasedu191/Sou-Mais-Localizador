@@ -207,6 +207,7 @@ class Helpers {
 			[
 				'strings'  => $context['strings'],
 				'settings' => $context['settings'],
+				'initialUnits' => $context['initial_units'] ?? [],
 				'nonce'    => wp_create_nonce( 'soumais_locator' ),
 				'assets'   => [
 					'placeholder' => 'data:image/svg+xml;utf8,' . rawurlencode( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2e5bff"/><stop offset="100%" stop-color="#ff2d9b"/></linearGradient></defs><rect width="320" height="200" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family=\"Arial, sans-serif\" font-size=\"28\">Sou Mais</text></svg>' ),
@@ -235,5 +236,69 @@ class Helpers {
 
 	public static function normalize_digits( $value ) {
 		return preg_replace( '/\D+/', '', (string) $value );
+	}
+
+	public static function prepare_unit_payload( $post_id, $include_meta = false ) {
+		$post_id   = absint( $post_id );
+		$image_id  = (int) get_post_meta( $post_id, '_sou_image_id', true );
+		$thumbnail = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : get_the_post_thumbnail_url( $post_id, 'medium' );
+		$lat       = (float) get_post_meta( $post_id, '_sou_lat', true );
+		$lng       = (float) get_post_meta( $post_id, '_sou_lng', true );
+
+		$payload = [
+			'id'        => $post_id,
+			'title'     => get_the_title( $post_id ),
+			'address'   => self::format_unit_address( $post_id ),
+			'phone'     => get_post_meta( $post_id, '_sou_tel', true ),
+			'whatsapp'  => get_post_meta( $post_id, '_sou_whatsapp', true ),
+			'hours'     => wp_kses_post( get_post_meta( $post_id, '_sou_horario', true ) ),
+			'url'       => esc_url_raw( get_post_meta( $post_id, '_sou_tecno_url', true ) ),
+			'distance'  => null,
+			'thumbnail' => $thumbnail,
+		];
+
+		if ( $include_meta ) {
+			$payload['_meta'] = [
+				'lat'         => $lat,
+				'lng'         => $lng,
+				'cep_digits'  => self::normalize_digits( get_post_meta( $post_id, '_sou_cep', true ) ),
+				'search_blob' => self::normalize_string(
+					sprintf(
+						'%s %s %s %s',
+						get_the_title( $post_id ),
+						get_post_meta( $post_id, '_sou_endereco', true ),
+						get_post_meta( $post_id, '_sou_cidade', true ),
+						get_post_meta( $post_id, '_sou_bairro', true )
+					)
+				),
+			];
+		}
+
+		return $payload;
+	}
+
+	public static function get_active_units( $limit = -1, $include_meta = false ) {
+		$query = new \WP_Query(
+			[
+				'post_type'      => Post_Type_Unidade::CPT,
+				'posts_per_page' => $limit,
+				'post_status'    => 'publish',
+				'meta_query'     => [
+					[
+						'key'   => '_sou_status',
+						'value' => 'active',
+					],
+				],
+			]
+		);
+
+		$units = [];
+		foreach ( $query->posts as $post ) {
+			$units[] = self::prepare_unit_payload( $post->ID, $include_meta );
+		}
+
+		wp_reset_postdata();
+
+		return $units;
 	}
 }
