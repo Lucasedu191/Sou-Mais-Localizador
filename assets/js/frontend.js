@@ -39,10 +39,24 @@
 			if (!carousel || !carouselPrev || !carouselNext) {
 				return;
 			}
+
+			const hasCards = !!carousel.querySelector('.sm-card');
 			const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-			const noScrollNeeded = maxScroll <= 5;
-			carouselPrev.disabled = noScrollNeeded || carousel.scrollLeft <= 5;
-			carouselNext.disabled = noScrollNeeded || carousel.scrollLeft >= maxScroll - 5;
+			const canScroll = hasCards && maxScroll > 5;
+
+			if ( ! canScroll ) {
+				carouselPrev.disabled = true;
+				carouselNext.disabled = true;
+				carouselPrev.classList.add('is-hidden');
+				carouselNext.classList.add('is-hidden');
+				return;
+			}
+
+			carouselPrev.classList.remove('is-hidden');
+			carouselNext.classList.remove('is-hidden');
+
+			carouselPrev.disabled = carousel.scrollLeft <= 5;
+			carouselNext.disabled = carousel.scrollLeft >= maxScroll - 5;
 		};
 
 		if (carouselPrev && carousel) {
@@ -69,12 +83,6 @@
 		};
 		let hasSearched = false;
 		resultsWrap.classList.add('sm-locator__results--hidden');
-
-		resultsWrap.classList.add('sm-locator__results--hidden');
-
-		const revealResults = () => {
-			resultsWrap.classList.remove('sm-locator__results--hidden');
-		};
 
 		searchForm.addEventListener('submit', (event) => {
 			event.preventDefault();
@@ -242,11 +250,13 @@
 
 		if (!Array.isArray(items) || items.length === 0) {
 			carousel.innerHTML = '<p class="sm-locator__empty sm-locator__empty--carousel">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
+			carousel.scrollLeft = 0;
 			updateCarouselNav();
 			return;
 		}
 
 		carousel.innerHTML = items.map((unit) => buildCard(unit, 'carousel')).join('');
+		carousel.scrollLeft = 0;
 		requestAnimationFrame(updateCarouselNav);
 	}
 
