@@ -57,7 +57,12 @@ defined( 'ABSPATH' ) || exit;
 								<p class="sm-card__address"><?php echo $address; ?></p>
 							</div>
 							<div class="sm-card__actions">
-								<button type="button" class="sm-card__cta" data-unit="<?php echo esc_attr( $unit['id'] ); ?>" data-unit-name="<?php echo $title; ?>">
+								<button
+									type="button"
+									class="sm-card__cta"
+									data-unit="<?php echo esc_attr( $unit['id'] ); ?>"
+									data-unit-name="<?php echo esc_attr( $unit['title'] ?? '' ); ?>"
+								>
 									<?php echo esc_html( $strings['plans_label'] ); ?>
 								</button>
 								<?php if ( $settings['show_whatsapp'] && ! empty( $unit['whatsapp'] ) ) : ?>
