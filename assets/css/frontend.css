@@ -109,9 +109,9 @@
 	cursor: not-allowed;
 }
 
-.sm-carousel--inactive .sm-carousel__nav {
-	opacity: 0.35;
-	pointer-events: none;
+.sm-carousel__nav span {
+	font-size: 1.75rem;
+	line-height: 1;
 }
 
 .sm-carousel__nav.is-hidden {
@@ -191,10 +191,27 @@
 
 .sm-locator__results {
 	display: none;
+	position: relative;
+	width: 100%;
+	margin: 2rem auto 0;
 }
 
 .sm-locator__results--hidden {
 	display: none;
+}
+
+.sm-locator__results.has-results {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+	max-width: 1100px;
+}
+
+.sm-locator__results.has-results .sm-card {
+	flex: 0 1 calc(33.333% - 1rem);
+	max-width: calc(33.333% - 1rem);
+	min-width: 280px;
 }
 
 .sm-locator__results.is-loading::after {
@@ -423,6 +440,7 @@
 	margin: 0 0 0.5rem;
 	font-size: 1.5rem;
 	font-weight: 700;
+	color: rgba(6, 16, 46, 0.95);
 }
 
 .sm-modal__description {
@@ -458,6 +476,12 @@
 	margin-top: 0.2rem;
 }
 
+.sm-modal__unit {
+	margin-bottom: 0.75rem;
+	font-weight: 600;
+	color: rgba(6, 16, 46, 0.85);
+}
+
 .sm-lead__unit {
 	font-weight: 600;
 	color: var(--sou-blue);
@@ -467,6 +491,13 @@
 	background-color: rgba(6, 16, 46, 0.04);
 	border: 1px solid rgba(6, 16, 46, 0.12);
 	color: rgba(6, 16, 46, 0.9);
+}
+
+.sm-modal .sm-input:focus {
+	background-color: #ffffff;
+	color: rgba(6, 16, 46, 1);
+	border-color: rgba(6, 16, 46, 0.35);
+	box-shadow: 0 0 0 2px rgba(46, 91, 255, 0.15);
 }
 
 .sm-modal .sm-input::placeholder {
@@ -535,11 +566,19 @@
 	.sm-button {
 		width: 100%;
 	}
+
+	.sm-locator__results.has-results {
+		max-width: 100%;
+	}
+
+	.sm-locator__results.has-results .sm-card {
+		flex: 0 1 calc(100% - 1rem);
+	}
 }
 
 @media (max-width: 1024px) {
-	.sm-locator__results {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+	.sm-locator__results.has-results .sm-card {
+		flex: 0 1 calc(50% - 1rem);
 	}
 }
 
