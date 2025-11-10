@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sou Mais Localizador
  * Description: Localiza unidades, captura leads e integra com Tecnofit.
- * Version: 1.0.23
+ * Version: 1.0.24
  * Author: Sou Mais
  * Text Domain: soumais-localizador
  * Domain Path: /languages
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SOUMAIS_LOCATOR_VERSION', '1.0.23' );
+define( 'SOUMAIS_LOCATOR_VERSION', '1.0.24' );
 define( 'SOUMAIS_LOCATOR_FILE', __FILE__ );
 define( 'SOUMAIS_LOCATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SOUMAIS_LOCATOR_URL', plugin_dir_url( __FILE__ ) );
@@ -39,31 +39,16 @@ if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
 }
 
 if ( $factory ) {
-	$update_checker = $factory::buildUpdateChecker(
-		'https://github.com/Lucasedu191/Sou-Mais-Localizador',
+	// Static manifest avoids GitHub API rate limits; keep updates.json in sync with releases.
+	$default_manifest = 'https://raw.githubusercontent.com/Lucasedu191/Sou-Mais-Localizador/main/updates.json';
+	$manifest_url     = defined( 'SOUMAIS_LOCATOR_UPDATES_URL' ) && SOUMAIS_LOCATOR_UPDATES_URL ? SOUMAIS_LOCATOR_UPDATES_URL : $default_manifest;
+	$manifest_url     = apply_filters( 'soumais_locator_updates_manifest', $manifest_url );
+
+	$factory::buildUpdateChecker(
+		$manifest_url,
 		__FILE__,
 		'soumais-localizador'
 	);
-
-	if ( method_exists( $update_checker, 'setBranch' ) ) {
-		$update_checker->setBranch( 'main' );
-	}
-
-	$api = $update_checker->getVcsApi();
-	if ( $api && method_exists( $api, 'enableReleaseAssets' ) ) {
-		$api->enableReleaseAssets();
-	}
-
-	$token = null;
-	if ( defined( 'SOUMAIS_LOCATOR_GITHUB_TOKEN' ) && SOUMAIS_LOCATOR_GITHUB_TOKEN ) {
-		$token = SOUMAIS_LOCATOR_GITHUB_TOKEN;
-	} elseif ( getenv( 'SOUMAIS_LOCATOR_GITHUB_TOKEN' ) ) {
-		$token = getenv( 'SOUMAIS_LOCATOR_GITHUB_TOKEN' );
-	}
-
-	if ( $token ) {
-		$update_checker->setAuthentication( trim( $token ) );
-	}
 }
 
 add_action(
