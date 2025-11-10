@@ -1,10 +1,65 @@
 (function () {
 	const data = window.SouMaisLocator;
-	if (!data || !window.wp || !window.wp.apiFetch) {
+	if (!data) {
 		return;
 	}
 
-	const { apiFetch } = window.wp;
+	const apiFetch = window.wp && window.wp.apiFetch ? window.wp.apiFetch : null;
+
+	const buildUnitsUrl = (queryString) => {
+		try {
+			const url = new URL(data.settings.rest_units);
+			url.search = queryString;
+			return url.toString();
+		} catch (error) {
+			return data.settings.rest_units + (queryString ? '?' + queryString : '');
+		}
+	};
+
+	const requestUnits = (queryString) => {
+		if (apiFetch) {
+			return apiFetch({
+				path: '/soumais/v1/unidades?' + queryString,
+				method: 'GET',
+			});
+		}
+
+		return fetch(buildUnitsUrl(queryString), {
+			method: 'GET',
+		}).then((response) => {
+			if (!response.ok) {
+				throw new Error('request_failed');
+			}
+			return response.json();
+		});
+	};
+
+	const submitLead = (payload) => {
+		if (apiFetch) {
+			return apiFetch({
+				path: '/soumais/v1/lead',
+				method: 'POST',
+				data: payload,
+				headers: {
+					'X-WP-Nonce': data.nonce,
+				},
+			});
+		}
+
+		return fetch(data.settings.rest_lead, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': data.nonce,
+			},
+			body: JSON.stringify(payload),
+		}).then((response) => {
+			if (!response.ok) {
+				throw new Error('request_failed');
+			}
+			return response.json();
+		});
+	};
 
 	document.addEventListener('DOMContentLoaded', () => {
 		const containers = document.querySelectorAll('.sm-locator');
@@ -133,10 +188,7 @@
 				}
 			});
 
-			return apiFetch({
-				path: '/soumais/v1/unidades?' + searchParams.toString(),
-				method: 'GET',
-			})
+			return requestUnits(searchParams.toString())
 				.then((items) => {
 					renderResults(items, { showGrid });
 				})
@@ -231,14 +283,7 @@
 			submitBtn.classList.add('is-loading');
 			showStatus(statusEl, data.strings.success_message);
 
-			apiFetch({
-				path: '/soumais/v1/lead',
-				method: 'POST',
-				data: payload,
-				headers: {
-					'X-WP-Nonce': data.nonce,
-				},
-			})
+			submitLead(payload)
 				.then((response) => {
 					if (response.redirect_url) {
 						window.location.href = response.redirect_url;
