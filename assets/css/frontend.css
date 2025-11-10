@@ -467,13 +467,43 @@
 
 .sm-checkbox {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	gap: 0.5rem;
 	font-size: 0.85rem;
 }
 
 .sm-checkbox input {
-	margin-top: 0.2rem;
+	margin: 0;
+	width: 18px;
+	height: 18px;
+	border-radius: 4px;
+	border: 1.5px solid rgba(6, 16, 46, 0.65);
+	background-color: #ffffff;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	appearance: none;
+	cursor: pointer;
+	transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.sm-checkbox input::after {
+	content: '';
+	width: 6px;
+	height: 10px;
+	border-right: 2px solid #ffffff;
+	border-bottom: 2px solid #ffffff;
+	transform: rotate(45deg);
+	opacity: 0;
+}
+
+.sm-checkbox input:checked {
+	background-color: var(--sou-blue);
+	border-color: var(--sou-blue);
+}
+
+.sm-checkbox input:checked::after {
+	opacity: 1;
 }
 
 .sm-modal__unit {
@@ -483,6 +513,7 @@
 	display: flex;
 	gap: 0.25rem;
 	flex-wrap: wrap;
+	align-items: center;
 }
 
 .sm-lead__unit {
@@ -520,7 +551,7 @@
 	width: 100%;
 	background-color: var(--sou-blue);
 	color: var(--sou-white);
-	border: none;
+	border: 2px solid var(--sou-blue);
 	padding: 0.9rem 1.25rem;
 	border-radius: var(--sou-radius);
 	font-weight: 600;
