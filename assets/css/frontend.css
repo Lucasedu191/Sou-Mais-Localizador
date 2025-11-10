@@ -70,6 +70,7 @@
 	padding: 0.5rem 0 1rem;
 	scroll-snap-type: x mandatory;
 	scrollbar-width: none;
+	-ms-overflow-style: none;
 	min-height: 280px;
 }
 
@@ -525,8 +526,23 @@
 	}
 
 	.sm-locator__carousel {
-		padding: 0.5rem 1.25rem 1rem;
+		padding: 0.5rem 1.5rem 1rem;
 	}
+
+	.sm-carousel__nav {
+		display: none;
+	}
+
+	.sm-card {
+		min-width: 240px;
+	}
+
+	.sm-card__media {
+		height: 200px;
+	}
+}
+
+	.sm-locator__carousel {`n	display: flex;`n	flex-wrap: nowrap;`n	align-items: stretch;`n	gap: 1rem;`n	overflow-x: auto;`n	overflow-y: hidden;`n	padding: 0.5rem 0 1rem;`n	scroll-snap-type: x mandatory;`n	scrollbar-width: none;`n	min-height: 280px;`n}
 
 	.sm-carousel__nav {
 		display: none;
@@ -556,3 +572,6 @@
 .sm-card--carousel .sm-card__media {
 	height: 200px;
 }
+
+
+

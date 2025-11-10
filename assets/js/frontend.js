@@ -75,6 +75,81 @@
 		setupPhoneMask(leadForm.querySelector('input[name="telefone"]'));
 		populateUtms(leadForm);
 
+		function renderCarousel(items) {
+			if (!carousel) {
+				return;
+			}
+
+			if (!Array.isArray(items) || items.length === 0) {
+				carousel.innerHTML = '<p class="sm-locator__empty sm-locator__empty--carousel">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
+				carousel.scrollLeft = 0;
+				updateCarouselNav();
+				return;
+			}
+
+			carousel.innerHTML = items.map((unit) => buildCard(unit, 'carousel')).join('');
+			carousel.scrollLeft = 0;
+			requestAnimationFrame(updateCarouselNav);
+		}
+
+		function renderResults(items, options = {}) {
+			const { showGrid = true } = options;
+			renderCarousel(items);
+
+			if (!resultsWrap) {
+				return;
+			}
+
+			if (!showGrid) {
+				resultsWrap.classList.add('sm-locator__results--hidden');
+				resultsWrap.innerHTML = '';
+				return;
+			}
+
+			resultsWrap.classList.remove('sm-locator__results--hidden');
+
+			if (!Array.isArray(items) || items.length === 0) {
+				resultsWrap.classList.remove('has-results');
+				resultsWrap.innerHTML = '<p class="sm-locator__empty">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
+				return;
+			}
+
+			resultsWrap.classList.add('has-results');
+			resultsWrap.innerHTML = items.map((unit) => buildCard(unit, 'grid')).join('');
+		}
+
+		function fetchUnits(params = {}, options = {}) {
+			const { showGrid = true } = options;
+
+			showStatus(statusEl, '', false);
+			if (showGrid && resultsWrap) {
+				resultsWrap.classList.add('is-loading');
+			}
+
+			const searchParams = new URLSearchParams();
+			Object.entries(params).forEach(([key, value]) => {
+				if (value !== undefined && value !== null && value !== '') {
+					searchParams.append(key, value);
+				}
+			});
+
+			return apiFetch({
+				path: '/soumais/v1/unidades?' + searchParams.toString(),
+				method: 'GET',
+			})
+				.then((items) => {
+					renderResults(items, { showGrid });
+				})
+				.catch(() => {
+					showStatus(statusEl, data.strings.error_message, true);
+				})
+				.finally(() => {
+					if (showGrid && resultsWrap) {
+						resultsWrap.classList.remove('is-loading');
+					}
+				});
+		}
+
 		const defaults = {
 			radius: data.settings.radius,
 			limit: Math.max(data.settings.results_limit || 0, 50),
@@ -84,7 +159,7 @@
 			event.preventDefault();
 			const query = queryInput.value.trim();
 			const params = { ...defaults, query };
-			fetchUnits(params, { resultsWrap, statusEl, root, showGrid: false });
+			fetchUnits(params, { showGrid: false });
 		});
 
 		if (locationBtn) {
@@ -103,7 +178,7 @@
 							lat: position.coords.latitude,
 							lng: position.coords.longitude,
 						};
-						fetchUnits(params, { resultsWrap, statusEl, root, showGrid: false });
+						fetchUnits(params, { showGrid: false });
 					},
 					() => {
 						showStatus(statusEl, data.strings.error_message, true);
@@ -188,81 +263,7 @@
 		}
 		requestAnimationFrame(updateCarouselNav);
 
-		fetchUnits({ ...defaults }, { resultsWrap, statusEl, root, showGrid: false });
-	}
-
-	function fetchUnits(params, context) {
-		const { resultsWrap, statusEl, showGrid = true } = context;
-		showStatus(statusEl, '', false);
-		if (showGrid && resultsWrap) {
-			resultsWrap.classList.add('is-loading');
-		}
-
-		const searchParams = new URLSearchParams();
-		Object.entries(params).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && value !== '') {
-				searchParams.append(key, value);
-			}
-		});
-
-		return window.wp
-			.apiFetch({
-				path: '/soumais/v1/unidades?' + searchParams.toString(),
-				method: 'GET',
-			})
-			.then((items) => {
-				renderResults(items, { resultsWrap, statusEl, showGrid });
-			})
-			.catch(() => {
-				showStatus(statusEl, data.strings.error_message, true);
-			})
-			.finally(() => {
-				if (showGrid && resultsWrap) {
-					resultsWrap.classList.remove('is-loading');
-				}
-			});
-	}
-
-	function renderResults(items, context) {
-		const { resultsWrap, showGrid = true } = context;
-
-		renderCarousel(items);
-
-		if (!showGrid || !resultsWrap) {
-			if (resultsWrap) {
-				resultsWrap.classList.add('sm-locator__results--hidden');
-				resultsWrap.innerHTML = '';
-			}
-			return;
-		}
-
-		resultsWrap.classList.remove('sm-locator__results--hidden');
-
-		if (!Array.isArray(items) || items.length === 0) {
-			resultsWrap.classList.remove('has-results');
-			resultsWrap.innerHTML = '<p class="sm-locator__empty">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
-			return;
-		}
-
-		resultsWrap.classList.add('has-results');
-		resultsWrap.innerHTML = items.map((unit) => buildCard(unit, 'grid')).join('');
-	}
-
-	function renderCarousel(items) {
-		if (!carousel) {
-			return;
-		}
-
-		if (!Array.isArray(items) || items.length === 0) {
-			carousel.innerHTML = '<p class="sm-locator__empty sm-locator__empty--carousel">' + (data.strings.empty || 'Nenhuma unidade encontrada.') + '</p>';
-			carousel.scrollLeft = 0;
-			updateCarouselNav();
-			return;
-		}
-
-		carousel.innerHTML = items.map((unit) => buildCard(unit, 'carousel')).join('');
-		carousel.scrollLeft = 0;
-		requestAnimationFrame(updateCarouselNav);
+		fetchUnits({ ...defaults }, { showGrid: false });
 	}
 
 	function buildCard(unit, variant = 'grid') {
@@ -366,5 +367,6 @@
 		});
 	}
 })();
+
 
 
