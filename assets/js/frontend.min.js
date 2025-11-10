@@ -342,12 +342,23 @@
 		fetchUnits({ ...defaults }, { showGrid: false });
 	}
 
+	function escapeHtml(value = '') {
+		return String(value)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	function buildCard(unit, variant = 'grid') {
 		const classes = ['sm-card'];
 		if (variant === 'carousel') {
 			classes.push('sm-card--carousel');
 		}
 
+		const title = escapeHtml(unit.title || '');
+		const address = escapeHtml(unit.address || '');
 		const distance = unit.distance ? `<span class="sm-card__distance">${unit.distance.toFixed(1)} km</span>` : '';
 		const whatsappMessage = `Ol\u00E1! Tenho interesse na unidade ${unit.title}`;
 		const whatsapp =
@@ -359,14 +370,14 @@
 			`<article class="${classes.join(' ')}">` +
 			'<div class="sm-card__halo"></div>' +
 			'<div class="sm-card__inner">' +
-			`<figure class="sm-card__media"><img src="${unit.thumbnail || data.assets.placeholder}" alt="${unit.title}"></figure>` +
+			`<figure class="sm-card__media"><img src="${unit.thumbnail || data.assets.placeholder}" alt="${title}"></figure>` +
 			'<div class="sm-card__body">' +
-			`<h3 class="sm-card__title">${unit.title}</h3>` +
-			`<p class="sm-card__address">${unit.address || ''}</p>` +
+			`<h3 class="sm-card__title">${title}</h3>` +
+			`<p class="sm-card__address">${address}</p>` +
 			distance +
 			'</div>' +
 			'<div class="sm-card__actions">' +
-			`<button type="button" class="sm-card__cta" data-unit="${unit.id}" data-unit-name="${unit.title}">${data.strings.plans_label}</button>` +
+			`<button type="button" class="sm-card__cta" data-unit="${unit.id}" data-unit-name="${title}">${data.strings.plans_label}</button>` +
 			whatsapp +
 			'</div>' +
 			'</div>' +

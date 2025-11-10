@@ -526,6 +526,8 @@
 	font-weight: 600;
 	cursor: pointer;
 	transition: var(--sou-transition);
+	box-shadow: 0 12px 20px rgba(46, 91, 255, 0.25);
+	text-transform: none;
 }
 
 .sm-submit:hover,
