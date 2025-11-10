@@ -73,7 +73,7 @@
 	}
 
 	function initLocator(root) {
-		const searchForm = root.querySelector('.sm-locator__search');
+			const searchForm = root.querySelector('.sm-locator__search');
 		const queryInput = root.querySelector('.sm-input--query');
 		const locationBtn = root.querySelector('.sm-button--location');
 		const carouselWrap = root.querySelector('.sm-carousel');
@@ -87,7 +87,8 @@
 		const submitBtn = leadForm ? leadForm.querySelector('button[type="submit"]') : null;
 		const carousel = root.querySelector('.sm-locator__carousel');
 		const carouselPrev = root.querySelector('.sm-carousel__nav--prev');
-		const carouselNext = root.querySelector('.sm-carousel__nav--next');
+			const carouselNext = root.querySelector('.sm-carousel__nav--next');
+			const fallbackUnitLabel = data.strings.choose_unit || '';
 
 		if (!searchForm || !resultsWrap || !leadForm) {
 			return;
@@ -270,12 +271,18 @@
 				return;
 			}
 			const unitId = target.dataset.unit;
-			const unitName = target.dataset.unitName || target.textContent;
+			let unitName = target.dataset.unitName || target.textContent;
+			if ((!unitName || unitName === fallbackUnitLabel) && target.closest('.sm-card')) {
+				const titleEl = target.closest('.sm-card').querySelector('.sm-card__title');
+				if (titleEl) {
+					unitName = titleEl.textContent.trim();
+				}
+			}
 			if (unitField) {
 				unitField.value = unitId;
 			}
 			if (unitLabel) {
-				unitLabel.textContent = unitName;
+				unitLabel.textContent = unitName || fallbackUnitLabel;
 			}
 			openModal(modal);
 		};

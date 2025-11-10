@@ -480,11 +480,14 @@
 	margin-bottom: 0.75rem;
 	font-weight: 600;
 	color: rgba(6, 16, 46, 0.85);
+	display: flex;
+	gap: 0.25rem;
+	flex-wrap: wrap;
 }
 
 .sm-lead__unit {
-	font-weight: 600;
-	color: var(--sou-blue);
+	font-weight: 700;
+	color: rgba(6, 16, 46, 0.95);
 }
 
 .sm-modal .sm-input {
@@ -507,6 +510,10 @@
 .sm-modal .sm-checkbox label {
 	color: rgba(6, 16, 46, 0.7);
 	font-weight: 500;
+}
+
+.sm-modal input[type="checkbox"] {
+	accent-color: var(--sou-blue);
 }
 
 .sm-submit {

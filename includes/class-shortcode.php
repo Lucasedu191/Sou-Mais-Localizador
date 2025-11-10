@@ -39,6 +39,7 @@ class Shortcode {
 				'success_message'    => __( 'Redirecionando para os planos...', 'soumais-localizador' ),
 				'error_message'      => __( 'Não foi possível enviar seus dados. Tente novamente.', 'soumais-localizador' ),
 				'empty'              => __( 'Nenhuma unidade encontrada no momento.', 'soumais-localizador' ),
+				'choose_unit'        => __( 'Escolha uma unidade', 'soumais-localizador' ),
 			],
 			'settings' => [
 				'rest_units'   => esc_url_raw( rest_url( REST_API::ENDPOINT_NAMESPACE . '/unidades' ) ),

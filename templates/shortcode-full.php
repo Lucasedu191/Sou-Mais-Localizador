@@ -95,7 +95,7 @@ defined( 'ABSPATH' ) || exit;
 			</p>
 			<div class="sm-modal__unit">
 				<?php esc_html_e( 'Unidade selecionada:', 'soumais-localizador' ); ?>
-				<span class="sm-lead__unit"><?php esc_html_e( 'Escolha uma unidade', 'soumais-localizador' ); ?></span>
+				<span class="sm-lead__unit"><?php echo esc_html( $strings['choose_unit'] ); ?></span>
 			</div>
 
 			<form class="sm-locator__lead-form">
