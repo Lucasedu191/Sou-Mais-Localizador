@@ -638,9 +638,9 @@
 	}
 
 	.sm-card--carousel {
-		min-width: 220px;
-		max-width: 220px;
-		flex: 0 0 220px;
+		min-width: min(340px, calc(90vw - 2rem));
+		max-width: min(340px, calc(90vw - 2rem));
+		flex: 0 0 min(340px, calc(90vw - 2rem));
 		height: auto;
 	}
 
@@ -679,9 +679,9 @@
 	}
 
 	.sm-card--carousel {
-		min-width: 200px;
-		max-width: 200px;
-		flex: 0 0 200px;
+		min-width: min(360px, calc(92vw - 1.25rem));
+		max-width: min(360px, calc(92vw - 1.25rem));
+		flex: 0 0 min(360px, calc(92vw - 1.25rem));
 	}
 
 	.sm-card--carousel .sm-card__media {
