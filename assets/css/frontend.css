@@ -629,7 +629,7 @@
 
 	.sm-locator__carousel {
 		gap: 0.75rem;
-		padding: 0.25rem 1.25rem 0.75rem;
+		padding: 0.25rem 0 0.75rem;
 		min-height: 220px;
 	}
 
@@ -638,9 +638,9 @@
 	}
 
 	.sm-card--carousel {
-		min-width: min(340px, calc(90vw - 2rem));
-		max-width: min(340px, calc(90vw - 2rem));
-		flex: 0 0 min(340px, calc(90vw - 2rem));
+		min-width: min(360px, calc(95vw - 1rem));
+		max-width: min(360px, calc(95vw - 1rem));
+		flex: 0 0 min(360px, calc(95vw - 1rem));
 		height: auto;
 	}
 
@@ -675,13 +675,13 @@
 	}
 
 	.sm-locator__carousel {
-		padding: 0.25rem 0.75rem 0.75rem;
+		padding: 0.25rem 0 0.75rem;
 	}
 
 	.sm-card--carousel {
-		min-width: min(360px, calc(92vw - 1.25rem));
-		max-width: min(360px, calc(92vw - 1.25rem));
-		flex: 0 0 min(360px, calc(92vw - 1.25rem));
+		min-width: min(380px, calc(100vw - 1rem));
+		max-width: min(380px, calc(100vw - 1rem));
+		flex: 0 0 min(380px, calc(100vw - 1rem));
 	}
 
 	.sm-card--carousel .sm-card__media {
