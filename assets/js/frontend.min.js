@@ -81,9 +81,9 @@
 		const statusEl = root.querySelector('.sm-locator__status');
 		const modal = root.querySelector('.sm-modal');
 		const closeModalBtn = root.querySelector('.sm-modal__close');
-		const leadForm = root.querySelector('.sm-locator__lead-form');
-		const unitField = leadForm ? leadForm.querySelector('input[name="unidade"]') : null;
-		const unitLabel = leadForm ? leadForm.querySelector('.sm-lead__unit') : null;
+			const leadForm = root.querySelector('.sm-locator__lead-form');
+			const unitField = leadForm ? leadForm.querySelector('input[name="unidade"]') : null;
+			const unitLabel = root.querySelector('.sm-lead__unit');
 		const submitBtn = leadForm ? leadForm.querySelector('button[type="submit"]') : null;
 		const carousel = root.querySelector('.sm-locator__carousel');
 		const carouselPrev = root.querySelector('.sm-carousel__nav--prev');
