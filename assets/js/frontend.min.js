@@ -155,6 +155,33 @@
 		setupPhoneMask(leadForm.querySelector('input[name="telefone"]'));
 		populateUtms(leadForm);
 
+		const normalizeLimits = (items, params = {}) => {
+			if (!Array.isArray(items)) {
+				return [];
+			}
+
+			const limit = Math.max(parseInt(data.settings.results_limit, 10) || 6, 1);
+			const numericRadius = params.radius ? parseFloat(params.radius) : null;
+			const hasCoords = typeof params.lat === 'number' && typeof params.lng === 'number';
+
+			if (hasCoords) {
+				const withDistance = items.filter((unit) => typeof unit.distance === 'number');
+				const withinRadius =
+					numericRadius && numericRadius > 0
+						? withDistance.filter((unit) => unit.distance <= numericRadius)
+						: withDistance;
+
+				const source = withinRadius.length ? withinRadius : withDistance.length ? withDistance : items;
+				return source.slice(0, limit);
+			}
+
+			if (params.query) {
+				return items.slice(0, limit);
+			}
+
+			return items;
+		};
+
 		function renderCarousel(items) {
 			if (!carousel) {
 				return;
@@ -200,23 +227,25 @@
 
 		function fetchUnits(params = {}, options = {}) {
 			const { showGrid = true } = options;
+			const requestParams = { ...params };
 
 			showStatus(statusEl, '', false);
 			if (showGrid && resultsWrap) {
 				resultsWrap.classList.add('is-loading');
 			}
 
-			const searchParams = new URLSearchParams();
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, value);
-				}
-			});
+				const searchParams = new URLSearchParams();
+				Object.entries(requestParams).forEach(([key, value]) => {
+					if (value !== undefined && value !== null && value !== '') {
+						searchParams.append(key, value);
+					}
+				});
 
-			return requestUnits(searchParams.toString())
-				.then((items) => {
-					renderResults(items, { showGrid });
-				})
+				return requestUnits(searchParams.toString())
+					.then((items) => {
+						const prepared = normalizeLimits(items, requestParams);
+						renderResults(prepared, { showGrid });
+					})
 				.catch(() => {
 					showStatus(statusEl, data.strings.error_message, true);
 				})
