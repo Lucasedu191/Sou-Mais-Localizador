@@ -23,6 +23,15 @@ class Settings {
 			'dashicons-location-alt',
 			58
 		);
+
+		add_submenu_page(
+			'soumais_locator',
+			__( 'Configurações', 'soumais-localizador' ),
+			__( 'Configurações', 'soumais-localizador' ),
+			'manage_options',
+			'soumais_locator',
+			[ $this, 'render_page' ]
+		);
 	}
 
 	public function register_settings() {

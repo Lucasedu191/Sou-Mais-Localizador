@@ -110,8 +110,13 @@
 }
 
 .sm-carousel__nav span {
-	font-size: 1.75rem;
+	font-size: 2.3rem;
 	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
 }
 
 .sm-carousel__nav.is-hidden {
@@ -149,6 +154,12 @@
 
 .sm-input::placeholder {
 	color: rgba(6, 13, 39, 0.45);
+}
+
+.sm-input--query {
+	border-radius: 32px;
+	padding: 1.1rem 1.25rem;
+	font-size: 1.05rem;
 }
 
 .sm-button {
@@ -189,6 +200,35 @@
 .sm-button--location:focus-visible {
 	background-color: #21c463;
 	border-color: #21c463;
+}
+
+.sm-button--location.is-loading {
+	position: relative;
+	opacity: 0.65;
+	pointer-events: none;
+}
+
+.sm-button--location.is-loading::after {
+	content: '';
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: sm-spin 0.8s linear infinite;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@keyframes sm-spin {
+	from {
+		transform: translateY(-50%) rotate(0deg);
+	}
+	to {
+		transform: translateY(-50%) rotate(360deg);
+	}
 }
 
 .sm-locator__results {
@@ -478,6 +518,12 @@
 	font-weight: 600;
 	margin-bottom: 0.35rem;
 	color: rgba(6, 16, 46, 0.75);
+}
+
+.sm-required {
+	color: #ff2d6b;
+	margin-left: 0.25rem;
+	font-weight: 700;
 }
 
 .sm-checkbox {

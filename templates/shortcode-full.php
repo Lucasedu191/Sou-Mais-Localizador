@@ -100,17 +100,17 @@ defined( 'ABSPATH' ) || exit;
 
 			<form class="sm-locator__lead-form">
 				<div class="sm-field">
-					<label for="sm-lead-name"><?php esc_html_e( 'Nome completo', 'soumais-localizador' ); ?></label>
+					<label for="sm-lead-name"><?php esc_html_e( 'Nome completo', 'soumais-localizador' ); ?><span class="sm-required" aria-hidden="true">*</span></label>
 					<input type="text" id="sm-lead-name" name="nome" class="sm-input" required autocomplete="name">
 				</div>
 
 				<div class="sm-field">
-					<label for="sm-lead-email"><?php esc_html_e( 'E-mail', 'soumais-localizador' ); ?></label>
+					<label for="sm-lead-email"><?php esc_html_e( 'E-mail', 'soumais-localizador' ); ?><span class="sm-required" aria-hidden="true">*</span></label>
 					<input type="email" id="sm-lead-email" name="email" class="sm-input" required autocomplete="email">
 				</div>
 
 				<div class="sm-field">
-					<label for="sm-lead-phone"><?php esc_html_e( 'Telefone', 'soumais-localizador' ); ?></label>
+					<label for="sm-lead-phone"><?php esc_html_e( 'Telefone', 'soumais-localizador' ); ?><span class="sm-required" aria-hidden="true">*</span></label>
 					<input type="tel" id="sm-lead-phone" name="telefone" class="sm-input" required autocomplete="tel">
 				</div>
 

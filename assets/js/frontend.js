@@ -268,6 +268,27 @@
 			fetchUnits(params, { showGrid: false });
 		});
 
+		let locationBtnBaseText = locationBtn ? locationBtn.textContent : '';
+
+		const setLocationLoading = (state) => {
+			if (!locationBtn) {
+				return;
+			}
+
+			if (state) {
+				locationBtnBaseText = locationBtnBaseText || locationBtn.textContent;
+				locationBtn.disabled = true;
+				locationBtn.classList.add('is-loading');
+				locationBtn.textContent = data.strings.location_loading || locationBtnBaseText;
+			} else {
+				locationBtn.disabled = false;
+				locationBtn.classList.remove('is-loading');
+				if (locationBtnBaseText) {
+					locationBtn.textContent = locationBtnBaseText;
+				}
+			}
+		};
+
 		if (locationBtn) {
 			locationBtn.addEventListener('click', () => {
 				if (!navigator.geolocation) {
@@ -275,7 +296,13 @@
 					return;
 				}
 
+				const promptMessage = data.strings.location_prompt || '';
+				if (promptMessage && !window.confirm(promptMessage)) {
+					return;
+				}
+
 				showStatus(statusEl, data.strings.success_message);
+				setLocationLoading(true);
 
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
@@ -284,10 +311,16 @@
 							lat: position.coords.latitude,
 							lng: position.coords.longitude,
 						};
-						fetchUnits(params, { showGrid: false });
+						const request = fetchUnits(params, { showGrid: false });
+						if (request && typeof request.finally === 'function') {
+							request.finally(() => setLocationLoading(false));
+						} else {
+							setLocationLoading(false);
+						}
 					},
 					() => {
 						showStatus(statusEl, data.strings.error_message, true);
+						setLocationLoading(false);
 					},
 					{ enableHighAccuracy: true, timeout: 8000 }
 				);

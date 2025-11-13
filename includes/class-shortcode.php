@@ -40,6 +40,8 @@ class Shortcode {
 				'error_message'      => __( 'Não foi possível enviar seus dados. Tente novamente.', 'soumais-localizador' ),
 				'empty'              => __( 'Nenhuma unidade encontrada no momento.', 'soumais-localizador' ),
 				'choose_unit'        => __( 'Escolha uma unidade', 'soumais-localizador' ),
+				'location_prompt'    => __( 'Podemos usar sua localização agora? Você pode permitir apenas desta vez no navegador.', 'soumais-localizador' ),
+				'location_loading'   => __( 'Localizando...', 'soumais-localizador' ),
 			],
 			'settings' => [
 				'rest_units'   => esc_url_raw( rest_url( REST_API::ENDPOINT_NAMESPACE . '/unidades' ) ),

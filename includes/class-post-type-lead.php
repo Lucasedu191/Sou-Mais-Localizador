@@ -12,6 +12,10 @@ class Post_Type_Lead {
 		add_action( 'init', [ $this, 'register' ] );
 		add_filter( 'manage_' . self::CPT . '_posts_columns', [ $this, 'columns' ] );
 		add_action( 'manage_' . self::CPT . '_posts_custom_column', [ $this, 'render_column' ], 10, 2 );
+		add_action( 'manage_posts_extra_tablenav', [ $this, 'render_export_button' ] );
+		add_action( 'admin_post_soumais_export_leads', [ $this, 'handle_export' ] );
+		add_filter( 'bulk_actions-edit-' . self::CPT, [ $this, 'register_bulk_actions' ] );
+		add_action( 'load-edit.php', [ $this, 'maybe_export_selected' ] );
 	}
 
 	public function register() {
@@ -91,5 +95,152 @@ class Post_Type_Lead {
 				echo esc_html( get_post_meta( $post_id, '_sou_data', true ) );
 				break;
 		}
+	}
+
+	public function render_export_button( $which ) {
+		if ( 'top' !== $which ) {
+			return;
+		}
+
+		global $typenow;
+		if ( self::CPT !== $typenow ) {
+			return;
+		}
+
+		$url = wp_nonce_url(
+			add_query_arg(
+				[
+					'action' => 'soumais_export_leads',
+				],
+				admin_url( 'admin-post.php' )
+			),
+			'soumais_export_leads'
+		);
+
+		echo '<div class="alignleft actions soumais-export-leads">';
+		echo '<a href="' . esc_url( $url ) . '" class="button button-primary">' . esc_html__( 'Exportar todos (CSV)', 'soumais-localizador' ) . '</a>';
+		echo '</div>';
+	}
+
+	public function handle_export() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Você não tem permissão para exportar leads.', 'soumais-localizador' ) );
+		}
+
+		check_admin_referer( 'soumais_export_leads' );
+
+		$this->export_csv();
+	}
+
+	public function register_bulk_actions( $bulk_actions ) {
+		$bulk_actions['soumais_export_selected'] = __( 'Exportar selecionados (CSV)', 'soumais-localizador' );
+		return $bulk_actions;
+	}
+
+	public function maybe_export_selected() {
+		$screen = get_current_screen();
+		if ( ! $screen || 'edit' !== $screen->base || self::CPT !== $screen->post_type ) {
+			return;
+		}
+
+		$action = $_REQUEST['action'] ?? '';
+		if ( 'soumais_export_selected' !== $action ) {
+			$action = $_REQUEST['action2'] ?? '';
+		}
+
+		if ( 'soumais_export_selected' !== $action ) {
+			return;
+		}
+
+		if ( empty( $_REQUEST['post'] ) || ! is_array( $_REQUEST['post'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Você não tem permissão para exportar leads.', 'soumais-localizador' ) );
+		}
+
+		$post_ids = array_map( 'absint', wp_unslash( $_REQUEST['post'] ) );
+		$post_ids = array_filter( $post_ids );
+		if ( empty( $post_ids ) ) {
+			return;
+		}
+
+		$this->export_csv( $post_ids );
+	}
+
+	protected function export_csv( array $post_ids = [] ) {
+		$args = [
+			'post_type'      => self::CPT,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+			'no_found_rows'  => true,
+		];
+
+		if ( ! empty( $post_ids ) ) {
+			$args['post__in'] = $post_ids;
+			$args['orderby']  = 'post__in';
+			$args['order']    = 'ASC';
+		}
+
+		$query = new \WP_Query( $args );
+
+		$filename = 'soumais-leads-' . gmdate( 'Ymd-His' ) . '.csv';
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=' . $filename );
+
+		$handle  = fopen( 'php://output', 'w' );
+		$headers = [
+			__( 'Nome', 'soumais-localizador' ),
+			__( 'E-mail', 'soumais-localizador' ),
+			__( 'Telefone', 'soumais-localizador' ),
+			__( 'Unidade', 'soumais-localizador' ),
+			__( 'Data', 'soumais-localizador' ),
+			__( 'Origem', 'soumais-localizador' ),
+			'UTM Source',
+			'UTM Medium',
+			'UTM Campaign',
+			'UTM Term',
+			'UTM Content',
+			'IP',
+		];
+		fputcsv( $handle, $headers, ';' );
+
+		foreach ( $query->posts as $post ) {
+			$unit_id = (int) get_post_meta( $post->ID, '_sou_unidade', true );
+			$row     = [
+				$this->csv_value( get_post_meta( $post->ID, '_sou_nome', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_email', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_telefone', true ) ),
+				$this->csv_value( $unit_id ? get_the_title( $unit_id ) : '' ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_data', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_origem', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_utm_source', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_utm_medium', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_utm_campaign', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_utm_term', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_utm_content', true ) ),
+				$this->csv_value( get_post_meta( $post->ID, '_sou_ip', true ) ),
+			];
+
+			fputcsv( $handle, $row, ';' );
+		}
+
+		wp_reset_postdata();
+		fclose( $handle );
+		exit;
+	}
+
+	private function csv_value( $value ) {
+		if ( is_array( $value ) ) {
+			$value = implode( ', ', $value );
+		}
+
+		$value = wp_strip_all_tags( (string) $value );
+		$value = preg_replace( "/\r|\n/", ' ', $value );
+
+		return trim( $value );
 	}
 }
