@@ -96,6 +96,8 @@
 	backdrop-filter: blur(10px);
 	box-shadow: 0 20px 40px rgba(5, 8, 20, 0.6);
 	z-index: 3;
+	left: 0;
+	right: 0;
 }
 
 .sm-carousel__nav:hover,
@@ -125,11 +127,11 @@
 }
 
 .sm-carousel__nav--prev {
-	left: 0.25rem;
+	left: 0.5rem;
 }
 
 .sm-carousel__nav--next {
-	right: 0.25rem;
+	right: 0.5rem;
 }
 
 .sm-input {
@@ -158,8 +160,11 @@
 
 .sm-input--query {
 	border-radius: 999px;
-	padding: 1.1rem 1.25rem;
+	padding: 1.2rem 1.35rem;
 	font-size: 1.05rem;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(240, 242, 248, 0.8));
+	border: 1px solid rgba(255, 255, 255, 0.45);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .sm-button {
