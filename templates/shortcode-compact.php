@@ -114,10 +114,12 @@ defined( 'ABSPATH' ) || exit;
 				<input type="hidden" name="utm_content" value="">
 				<input type="hidden" name="redirect" value="<?php echo esc_url( $atts['redirect'] ); ?>">
 
-				<div class="sm-field sm-checkbox">
-					<input type="checkbox" id="sm-lead-lgpd" name="aceite" value="1" required checked>
-					<label for="sm-lead-lgpd"><?php echo wp_kses_post( $strings['lgpd'] ); ?></label>
-				</div>
+						<div class="sm-field">
+			<label class="sm-checkbox" for="sm-lead-lgpd">
+				<input type="checkbox" id="sm-lead-lgpd" name="aceite" value="1" required checked>
+				<span><?php echo wp_kses_post( $strings['lgpd'] ); ?></span>
+			</label>
+		</div>
 
 				<button type="submit" class="sm-submit">
 					<?php echo esc_html( $strings['plans_label'] ); ?>
@@ -126,3 +128,5 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</div>
 </div>
+
+
