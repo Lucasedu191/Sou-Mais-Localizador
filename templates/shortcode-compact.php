@@ -115,7 +115,7 @@ defined( 'ABSPATH' ) || exit;
 				<input type="hidden" name="redirect" value="<?php echo esc_url( $atts['redirect'] ); ?>">
 
 				<div class="sm-field sm-checkbox">
-					<input type="checkbox" id="sm-lead-lgpd" name="aceite" value="1" required>
+					<input type="checkbox" id="sm-lead-lgpd" name="aceite" value="1" required checked>
 					<label for="sm-lead-lgpd"><?php echo wp_kses_post( $strings['lgpd'] ); ?></label>
 				</div>
 
