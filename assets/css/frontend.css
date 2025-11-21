@@ -98,11 +98,17 @@
 	box-shadow: none;
 	z-index: 3;
 	appearance: none;
+	outline: none;
+}
+
+.sm-carousel__nav:focus {
+	outline: none;
 }
 
 .sm-carousel__nav:hover,
-.sm-carousel__nav:focus-visible {
-	color: #21c463;
+.sm-carousel__nav:focus-visible,
+.sm-carousel__nav:active {
+	color: #ffffff;
 }
 
 .sm-carousel__nav[disabled] {
