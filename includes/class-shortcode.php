@@ -27,6 +27,11 @@ class Shortcode {
 		wp_enqueue_style( 'soumais-locator-frontend' );
 		wp_enqueue_script( 'soumais-locator-frontend' );
 
+		$cta_label = trim( (string) Settings::instance()->get_option( 'cta_label', '' ) );
+		if ( '' === $cta_label ) {
+			$cta_label = __( 'Ver planos', 'soumais-localizador' );
+		}
+
 		$context = [
 			'atts' => $atts,
 			'initial_units' => Helpers::get_active_units( max( Settings::instance()->get_option( 'results_limit', 6 ), 50 ) ),
@@ -34,7 +39,7 @@ class Shortcode {
 				'use_location'       => __( 'Usar localização atual', 'soumais-localizador' ),
 				'search_placeholder' => __( 'Busque por cidade, bairro ou CEP', 'soumais-localizador' ),
 				'whatsapp_label'     => __( 'Falar no WhatsApp', 'soumais-localizador' ),
-				'plans_label'        => Settings::instance()->get_option( 'cta_label', __( 'Ver planos', 'soumais-localizador' ) ),
+				'plans_label'        => $cta_label,
 				'lgpd'               => Settings::instance()->get_option( 'lgpd_message', __( 'Autorizo o contato da Academia Sou Mais.', 'soumais-localizador' ) ),
 				'success_message'    => __( 'Redirecionando para os planos...', 'soumais-localizador' ),
 				'error_message'      => __( 'Não foi possível enviar seus dados. Tente novamente.', 'soumais-localizador' ),

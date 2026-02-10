@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sou Mais Localizador
  * Description: Localiza unidades, captura leads e integra com Tecnofit.
- * Version: 1.0.51
+ * Version: 1.0.52
  * Author: Sou Mais
  * Text Domain: soumais-localizador
  * Domain Path: /languages

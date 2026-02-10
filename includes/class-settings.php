@@ -77,6 +77,9 @@ class Settings {
 		$options['cta_label']       = sanitize_text_field( $options['cta_label'] );
 		$options['recaptcha_key']   = sanitize_text_field( $options['recaptcha_key'] );
 		$options['github_token']    = sanitize_text_field( $options['github_token'] );
+		if ( '' === trim( $options['cta_label'] ) ) {
+			$options['cta_label'] = __( 'Ver planos', 'soumais-localizador' );
+		}
 
 		return $options;
 	}
