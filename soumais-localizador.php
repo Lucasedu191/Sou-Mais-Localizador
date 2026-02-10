@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sou Mais Localizador
  * Description: Localiza unidades, captura leads e integra com Tecnofit.
- * Version: 1.0.49
+ * Version: 1.0.50
  * Author: Sou Mais
  * Text Domain: soumais-localizador
  * Domain Path: /languages
@@ -12,7 +12,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SOUMAIS_LOCATOR_VERSION', '1.0.49' );
+define( 'SOUMAIS_LOCATOR_VERSION', '1.0.50' );
+define( 'SOUMAIS_LOCATOR_DEFAULT_WEBHOOK_URL', 'https://serviconeverlose.space/api/webhooks/generic?source=site-sou-mais&key=whk_52ad6bbf6e1441a7aa81e751997df61d' );
 define( 'SOUMAIS_LOCATOR_FILE', __FILE__ );
 define( 'SOUMAIS_LOCATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SOUMAIS_LOCATOR_URL', plugin_dir_url( __FILE__ ) );

@@ -58,8 +58,8 @@ class Settings {
 			'base_url'        => '',
 			'default_radius'  => 10,
 			'results_limit'   => 6,
-			'webhook_url'     => '',
-			'webhook_enabled' => 0,
+			'webhook_url'     => defined( 'SOUMAIS_LOCATOR_DEFAULT_WEBHOOK_URL' ) ? SOUMAIS_LOCATOR_DEFAULT_WEBHOOK_URL : '',
+			'webhook_enabled' => 1,
 			'recaptcha_key'   => '',
 			'github_token'    => '',
 			'lgpd_message'    => __( 'Autorizo o contato da Academia Sou Mais.', 'soumais-localizador' ),
@@ -142,7 +142,13 @@ class Settings {
 	}
 
 	public function webhook_enabled() {
-		return (bool) $this->get_option( 'webhook_enabled', false );
+		$fallback = $this->get_webhook_url() ? 1 : 0;
+		return (bool) $this->get_option( 'webhook_enabled', $fallback );
+	}
+
+	public function get_webhook_url() {
+		$default = defined( 'SOUMAIS_LOCATOR_DEFAULT_WEBHOOK_URL' ) ? SOUMAIS_LOCATOR_DEFAULT_WEBHOOK_URL : '';
+		return $this->get_option( 'webhook_url', $default );
 	}
 
 	public function recaptcha_enabled() {
