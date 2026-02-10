@@ -415,6 +415,16 @@
 	box-shadow: 0 10px 24px rgba(255, 45, 155, 0.35);
 }
 
+/* Prevent theme button styles from hiding CTA text inside cards. */
+.sm-locator .sm-card__actions .sm-card__cta {
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+	opacity: 1 !important;
+	text-indent: 0 !important;
+	font-size: 0.95rem !important;
+	line-height: 1.2 !important;
+}
+
 .sm-card__cta:hover,
 .sm-card__cta:focus-visible {
 	background: transparent;
